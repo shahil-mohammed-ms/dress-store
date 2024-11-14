@@ -17,6 +17,7 @@ const config: Config = {
   plugins: [
     require('tailwind-scrollbar-hide'),
     require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/forms'),
   ],
 };
 export default config;

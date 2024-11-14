@@ -1,6 +1,7 @@
 'use client'
-import Header from '../components/layouts/header/header'
+import Header from '@/components/layouts/header/header';
 import Banner1 from '@/components/banner1/Banner1';
+import Banner2 from '@/components/banner2/Banner2';
 import HomeProductList from '@/components/homeProductList/HomeProductList';
 import HomeCategories from '@/components/homeCategories/HomeCategories';
 import Promo from '@/components/promo/Promo';
@@ -13,6 +14,7 @@ export default function Home() {
    <div>
   <Header/>
   <Banner1/>
+  <Banner2/>
   <HomeProductList/>
   <HomeCategories/>
   <Promo/>
