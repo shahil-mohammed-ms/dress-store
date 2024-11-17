@@ -1,16 +1,16 @@
 import React from 'react'
+import CartPage from '@/components/cart/CartPage'
 import Header from '@/components/layouts/header/header'
-import ProductsParentLayout from '@/components/ProductsParentLayout/ProductsParentLayout'
 import Footer from '@/components/layouts/footer/Footer'
 
-function Products() {
+function Cart() {
   return (
     <div>
       <Header/>
-      <ProductsParentLayout/>
+      <CartPage/>
       <Footer/>
     </div>
   )
 }
 
-export default Products
+export default Cart
