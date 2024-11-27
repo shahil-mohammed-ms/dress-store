@@ -1,38 +1,73 @@
 'use client'
 import { useState } from 'react';
 
-const Variants = () => {
+const Variants = ({variationInputData}) => {
   const [variantFields, setVariantFields] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [variantValues, setVariantValues] = useState({});
 
+  // const handleAddField = () => {
+  //   if (inputValue && !variantFields.includes(inputValue)) {
+  //     setVariantFields((prevFields) => [...prevFields, inputValue]);
+  //     setVariantValues((prevValues) => ({ ...prevValues, [inputValue]: [] }));
+  //     setInputValue('');
+  //   }
+  // };
   const handleAddField = () => {
     if (inputValue && !variantFields.includes(inputValue)) {
       setVariantFields((prevFields) => [...prevFields, inputValue]);
-      setVariantValues((prevValues) => ({ ...prevValues, [inputValue]: [] }));
+      setVariantValues((prevValues) => {
+        const updatedValues = { ...prevValues, [inputValue]: [] };
+        variationInputData(updatedValues); // Pass updated values
+        return updatedValues;
+      });
       setInputValue('');
     }
   };
+  
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
+  // const handleAddVariant = (fieldName, variant, quantity) => {
+  //   if (variant && quantity > 0) {
+  //     setVariantValues((prevValues) => ({
+  //       ...prevValues,
+  //       [fieldName]: [...prevValues[fieldName], { variant, quantity }],
+  //     }));
+  //   }
+  // };
   const handleAddVariant = (fieldName, variant, quantity) => {
     if (variant && quantity > 0) {
-      setVariantValues((prevValues) => ({
-        ...prevValues,
-        [fieldName]: [...prevValues[fieldName], { variant, quantity }],
-      }));
+      setVariantValues((prevValues) => {
+        const updatedValues = {
+          ...prevValues,
+          [fieldName]: [...prevValues[fieldName], { variant, quantity }],
+        };
+        variationInputData(updatedValues); // Pass updated values
+        return updatedValues;
+      });
     }
   };
+  
 
+  // const handleRemoveVariant = (fieldName, index) => {
+  //   setVariantValues((prevValues) => {
+  //     const updatedVariants = prevValues[fieldName].filter((_, i) => i !== index);
+  //     variationInputData(updatedVariants)
+  //     return { ...prevValues, [fieldName]: updatedVariants };
+  //   });
+  // };
   const handleRemoveVariant = (fieldName, index) => {
     setVariantValues((prevValues) => {
       const updatedVariants = prevValues[fieldName].filter((_, i) => i !== index);
-      return { ...prevValues, [fieldName]: updatedVariants };
+      const updatedValues = { ...prevValues, [fieldName]: updatedVariants };
+      variationInputData(updatedValues); // Pass updated values
+      return updatedValues;
     });
   };
+  
 
   const handleKeyPress = (event, fieldName) => {
     if (event.key === 'Enter') {

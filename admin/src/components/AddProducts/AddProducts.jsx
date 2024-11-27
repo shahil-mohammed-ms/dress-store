@@ -10,6 +10,74 @@ import Variants from '../../components/Variants/Variants'
 
 
 function AddProducts() {
+
+
+const [productDetails,setProductDetails]=useState({
+  name: '',
+  slugName: '',
+  description: '',
+  price: '',
+  costPrice: '',
+  discountPrice: '',
+  tax: '',
+  stockQuantity: '',
+  stockStatus: '',
+  reorderLevel: '',
+  weight: '',
+  shippingCharge: '',
+  dimensions: '',
+  category: '',
+  subCategory: '',
+  manufacturer:'',
+  tags: [],
+  images: [],
+  dynamicInput:{},
+  variantInput:[],
+
+
+})
+
+const handelChange =(e)=>{
+
+ const {name,value} = e.target;
+ setProductDetails({...productDetails,[name]:value})
+}
+
+  // Handle dropdown change
+  const handleDropdownChange = (field, value) => {
+    setProductDetails({ ...productDetails, [field]: value });
+  };
+
+  // Handle tag updates
+  const handleTagsUpdate = (newTags) => {
+    setProductDetails({ ...productDetails, tags: newTags });
+  };
+
+  // Handle image uploads
+  const handleImageUpload = (uploadedImages) => {
+    setProductDetails({ ...productDetails, images: uploadedImages });
+  };
+
+  //dynamic values
+  const handleDynamicInput = (DynData)=>{
+setProductDetails({...productDetails,dynamicInput:DynData})
+
+  }
+
+ const handleVariants = (varData) =>{
+  setProductDetails({...productDetails,variantInput:varData})
+ }
+
+ 
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitting Product Data:', productDetails);
+    // Call API or backend to save productData
+  };
+
+
   return (
     <div className='flex flex-col ' >
     <Breadcrumb pageName="Add Products" />
@@ -23,7 +91,7 @@ function AddProducts() {
                
               </h3>
             </div>
-            <form action="#">
+            <form onSubmit={handleSubmit}>
               <div className="p-6.5">
 
               <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
@@ -38,6 +106,9 @@ function AddProducts() {
                      name
                     </label>
                     <input
+                    name='name'
+                    value={productDetails.name}
+                    onChange={handelChange}
                       type="text"
                       placeholder="Enter your first name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -49,6 +120,9 @@ function AddProducts() {
                       slug  name
                     </label>
                     <input
+                    name='slugName'
+                                        value={productDetails.slugName}
+                                        onChange={handelChange}
                       type="text"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -61,6 +135,9 @@ function AddProducts() {
                     Description
                   </label>
                   <textarea
+                  name='description'
+                                      value={productDetails.description}
+                                      onChange={handelChange}
                     rows={6}
                     placeholder="Type your message"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -79,6 +156,9 @@ function AddProducts() {
                      price
                     </label>
                     <input
+                    name='price'
+                                        value={productDetails.price}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your first name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -90,6 +170,9 @@ function AddProducts() {
                       cost price
                     </label>
                     <input
+                    name='costPrice'
+                                        value={productDetails.costPrice}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -102,6 +185,9 @@ function AddProducts() {
                      Discount Price
                     </label>
                     <input
+                    name='discountPrice'
+                                        value={productDetails.discountPrice}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your first name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -113,6 +199,9 @@ function AddProducts() {
                       tax
                     </label>
                     <input
+                    name='tax'
+                                        value={productDetails.tax}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -132,6 +221,9 @@ function AddProducts() {
                      Stock Quantity
                     </label>
                     <input
+                    name='stockQuantity'
+                                        value={productDetails.stockQuantity}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your first name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -143,6 +235,9 @@ function AddProducts() {
                       Stock status
                     </label>
                     <input
+                    name='stockStatus'
+                                        value={productDetails.stockStatus}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -154,6 +249,9 @@ function AddProducts() {
                       Reorder level
                     </label>
                     <input
+                    name='reorderLevel'
+                                        value={productDetails.reorderLevel}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -174,6 +272,9 @@ function AddProducts() {
                      weight
                     </label>
                     <input
+                    name='weight'
+                                        value={productDetails.weight}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your first name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -185,6 +286,9 @@ function AddProducts() {
                       shipping charge
                     </label>
                     <input
+                    name='shippingCharge'
+                                        value={productDetails.shippingCharge}
+                                        onChange={handelChange}
                       type="number"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -196,6 +300,9 @@ function AddProducts() {
                     Dimension
                   </label>
                   <input
+                     name='dimensions'
+                     value={productDetails.dimensions}
+                     onChange={handelChange}
                     type="text"
                     placeholder="Select subject"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -210,7 +317,7 @@ function AddProducts() {
                   </label>
                   
                 </div>
-                <Dropdown />
+                <Dropdown type="category" handleSelectedCategory={handleDropdownChange} />
 
               </div>
               <div className="p-6.5">
@@ -221,7 +328,7 @@ function AddProducts() {
                   </label>
                   
                 </div>
-                <Dropdown />
+                <Dropdown type="subCategory" handleSelectedCategory={handleDropdownChange}  />
 
               </div>
 
@@ -233,7 +340,7 @@ function AddProducts() {
                   </label>
                   
                 </div>
-                <Tags />
+                <Tags  tags={productDetails.tags} onUpdate={handleTagsUpdate} />
 
               </div>
 
@@ -250,7 +357,7 @@ function AddProducts() {
 </div>
 </div> */}
 <div>
-<ImageUploader/>
+<ImageUploader onUpload={handleImageUpload}/>
 </div>
 
 <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
@@ -265,13 +372,16 @@ function AddProducts() {
                      Manufacturer
                     </label>
                     <input
-                      type="text"
+                    name='manufacturer'
+                                        value={productDetails.manufacturer}
+                                        onChange={handelChange}
+                                          type="text"
                       placeholder="Enter your first name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
                   </div>
 
-                  <div className="w-full xl:w-1/2">
+                  {/* <div className="w-full xl:w-1/2">
                     <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                       Warranty
                     </label>
@@ -280,9 +390,9 @@ function AddProducts() {
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
-                  </div>
+                  </div> */}
                 </div>
-                <div className="mb-4.5">
+                {/* <div className="mb-4.5">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                     Return Policy
                   </label>
@@ -291,7 +401,7 @@ function AddProducts() {
                     placeholder="Select subject"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   />
-                </div>
+                </div> */}
 
                 <div>
                 <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
@@ -299,7 +409,7 @@ function AddProducts() {
                Dynamic informations 
               </h3>
             </div>
-                  <DynamicInputs/>
+                  <DynamicInputs dynamicInputDatas={handleDynamicInput} />
                 </div>
 
 <div>
@@ -308,7 +418,7 @@ function AddProducts() {
                Variants
               </h3>
             </div>
-  <Variants/>
+  <Variants variationInputData={handleVariants} />
 </div>
 
 

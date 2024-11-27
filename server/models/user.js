@@ -3,7 +3,7 @@ const Product = require("./product");
 
 const userSchema = mongoose.Schema(
   {
-    username: {
+    name: {
       type: String,
       required: true,
     },
@@ -13,12 +13,13 @@ const userSchema = mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
+    
     },
     password: {
       type: String,
-      required: true,
+     
     },
+    googleId: { type: String }, // Only for Google users
     is_admin: {
       type: Boolean,
       default: false,
@@ -26,7 +27,7 @@ const userSchema = mongoose.Schema(
     },
     is_verified: {
       type: Boolean,
-      default: true,
+      default: false,
       required: true,
     },
     profile: {
@@ -34,6 +35,9 @@ const userSchema = mongoose.Schema(
     },
     otp: {
       type: String,
+    },
+    otpExpiry: {
+      type: Date, // ISO timestamp.
     },
     cart: {
       item: [

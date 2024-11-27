@@ -1,28 +1,59 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
+'use client'
+import React, { useState, ChangeEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserDetails, clearUserDetails } from '../../redux/actions/userActions';
+
+interface FormData {
+  [key: string]: string;
+}
+import axiosInstance from '../../axios';
+
+
 export default function Login() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+const[formData,setFormData] = useState<FormData>({
+  email:'',
+  password:'',
+ 
+})
+
+const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
+  setFormData({ ...formData, [e.target.name]: e.target.value });
+};
+
+async function submitForm(e:any) {
+  e.preventDefault()
+
+try {
+  const response = await axiosInstance.post(`/auth/login`,formData)
+
+if(response?.data?.data.proceed){
+
+  localStorage.setItem(
+    "Tokens",
+    JSON.stringify({
+      access: response?.data?.data?.token?.accessToken,
+      refresh: response?.data?.data?.token?.refreshToken,
+    })
+  );
+  dispatch(setUserDetails(response?.data?.data?.existingUser));
+
+
+return router.push(`/`)
+
+}
+
+} catch (error) {
+  dispatch(clearUserDetails());
+}
+
+}
+
   return (
     <>
-      {/*
-        This example requires updating your template:
 
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -36,7 +67,7 @@ export default function Login() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={submitForm} method="POST" className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                 Email address
@@ -46,6 +77,7 @@ export default function Login() {
                   id="email"
                   name="email"
                   type="email"
+                  onChange={handleChange}
                   required
                   autoComplete="email"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
@@ -69,6 +101,7 @@ export default function Login() {
                   id="password"
                   name="password"
                   type="password"
+                  onChange={handleChange}
                   required
                   autoComplete="current-password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"

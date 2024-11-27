@@ -2,117 +2,175 @@ const User = require("../models/user");
 const Otp = require('../models/otp')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
-// module.exports.signup = async (req, res) => {
-//   const { username, password, email, phone,clientOtp } = req?.body;
-// console.log(req?.body)
-//   let otp = await Otp.findOne({ email });
-//   // console.log(otp.otp)
-//   // console.log(clientOtp)
-//   // console.log(otp.otp===clientOtp)
-//   try {
-//     if(otp.otp === clientOtp){
-//       try {
-//         const existingUser = await User.findOne({ email });
-//         if (existingUser) {
-//           return res.status(401).json({ message: "Email already in use" });
-//         }
-    
-    
-//         const encryptedPassword = await bcrypt.hash(password, 10);
-    
-//         const newUser = new User({
-//           username,
-//           password: encryptedPassword,
-//           phone,
-//           email,
-//         });
-    
-//         await newUser.save();
-    
-//         const { password: _, ...userWithoutPassword } = newUser.toObject();
-
-
-//         return res.status(200).json({
-//           message: "Registration successfull",
-//           data: { userWithoutPassword, signupStatus: true },
-//         });
-//       } catch (error) {
-//         console.log("err", error);
-//         return res
-//           .status(500)
-//           .json({ message: err?.message ?? "Something went wrong" });
-//       }
-  
-  
-//     }else{
-  
-//       console.log('Incorrect OTP');
-//       return res.status(400).json({ message: 'Incorrect OTP' });
-  
-//     }
-//   } catch (error) {
-    
-//   }
-
- 
-
-
- 
-// };
+const nodemailer = require('nodemailer');
+const randomstring = require('randomstring');
 
 module.exports.signup = async (req, res) => {
-  const { username, password, email, phone, clientOtp } = req?.body;
-  // console.log(req?.body);
+  const { name, password, email, phone } = req?.body;
+  console.log(req?.body)
+  const otp = generateOTP();
+  const otpExpiryTime = new Date(Date.now() + 5 * 60 * 1000); // Current time + 5 minutes
 
   try {
-    let otp = await Otp.findOne({ email });
+    const checkUser = await User.findOne({ email });
+    console.log('chk user',checkUser)
+    //hashing password
+    const encryptedPassword = await bcrypt.hash(password, 10);
 
-    if (!otp) {
-      return res.status(404).json({ message: 'OTP not found' });
+    if (checkUser) {
+      if (checkUser.is_verified) {
+        return res.status(409).json({
+          message: 'Email already present',
+          data: { proceed: false },
+        });
+      } else {
+        // User exists but is not verified; resend OTP and update expiry
+        checkUser.name=name;
+        checkUser.email=email;
+        checkUser.password=encryptedPassword;
+        checkUser.otp = otp;
+        checkUser.otpExpiry = otpExpiryTime;
+        await checkUser.save();
+
+        transporter.sendMail({
+          from: 'shahilmohammed7@gmail.com',
+          to: email,
+          subject: 'Your OTP for verification',
+          text: `Your OTP is: ${otp}`,
+        }, (error, info) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Failed to resend OTP' });
+          } else {
+            console.log('Email sent: ' + info.response);
+            return res.status(200).json({ 
+              message: 'OTP resent successfully', 
+              data: { proceed: true },
+            });
+          }
+        });
+        return; // Exit after resending OTP
+      }
     }
 
-    if (otp.otp === clientOtp) {
-      try {
-        const existingUser = await User.findOne({ email });
+    // New user signup flow
+    
+    const newUser = new User({
+      name,
+      password: encryptedPassword,
+      email,
+      otp,
+      otpExpiry: otpExpiryTime,
+    });
 
-        if (existingUser) {
-          return res.status(401).json({ message: 'Email already in use' });
-        }
+    await newUser.save();
 
-        const encryptedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = new User({
-          username,
-          password: encryptedPassword,
-          phone,
-          email,
-        });
-
-        await newUser.save();
-
-        // Delete the OTP document after successful registration
-        await Otp.deleteOne({ email });
-
-        const { password: _, ...userWithoutPassword } = newUser.toObject();
-
+    // Send email with OTP
+    transporter.sendMail({
+      from: 'shahilmohammed7@gmail.com',
+      to: email,
+      subject: 'Your OTP for verification',
+      text: `Your OTP is: ${otp}`,
+    }, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Failed to send OTP' });
+      } else {
+        console.log('Email sent: ' + info.response);
         return res.status(200).json({
-          message: 'Registration successful',
-          data: { userWithoutPassword, signupStatus: true },
+          message: 'Registration successful, OTP sent',
+          data: { proceed: true },
         });
-      } catch (error) {
-        console.log('err', error);
+      }
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ 
+      message: error?.message ?? 'Something went wrong' 
+    });
+  }
+};
+
+function generateOTP() {
+  return randomstring.generate({
+    length: 6,
+    charset: 'numeric'
+  });
+}
+
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'shahilmohammed7@gmail.com',
+    pass: 'ayeb hyaq ymta waih'
+  }
+});
+
+
+
+
+//verify signup otp along with jwt
+module.exports.verifyOtp = async (req, res) => {
+  const otp = req?.body?.otp;
+  const email = req?.body?.email;
+console.log('reqqq',req.body)
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (user) {
+      // Check if OTP matches and hasn't expired
+      const currentTime = new Date();
+      if (
+        user?.otp === otp &&
+        user?.otpExpiry &&
+        new Date(user.otpExpiry) > currentTime
+      ) {
+        // Mark the user as verified
+        user.is_verified = true;
+        user.otp = null; // Clear OTP after successful verification
+        user.otpExpiry = null; // Clear OTP expiry after successful verification
+        await user.save();
+
+        //add jwt code
+            // Generate the access token
+    const accessToken = jwt.sign(
+      { _id: existingUser._id },
+      process.env.JWT_ACCESS_SECRET,
+      {
+        expiresIn: process.env.JWT_ACCESS_EXPIRY,
+      }
+    );
+
+    // Generate the refresh token
+    const refreshToken = jwt.sign(
+      { _id: existingUser._id },
+      process.env.JWT_REFRESH_SECRET,
+      {
+        expiresIn: process.env.JWT_REFRESH_EXPIRY,
+      }
+    );
+
+        return res.status(200).json(
+          { 
+          message: 'OTP verified successfully!',
+          data:{proceed:true,
+          token: { accessToken, refreshToken },
+          existingUser:user} 
+         }
+      );
+      } else {
         return res
-          .status(500)
-          .json({ message: error?.message ?? 'Something went wrong' });
+          .status(400)
+          .json({ message: 'Invalid OTP or OTP has expired.',data:{proceed:false} });
       }
     } else {
-      // console.log('Incorrect OTP');
-      return res.status(400).json({ message: 'Incorrect OTP' });
+      return res.status(404).json({ message: 'User not found.',data:{proceed:false} });
     }
   } catch (error) {
-    console.error('err', error);
-    return res.status(500).json({ message: error?.message ?? 'Something went wrong' });
+    console.error('Error during OTP verification:', error);
+    return res.status(500).json({ message: 'Internal Server Error.',data:{proceed:false} });
   }
 };
 
@@ -251,8 +309,8 @@ module.exports.signin = async (req, res) => {
 
     // Respond with the user data and tokens
     res.status(200).json({
-      proceed: true,
-      data: { token: { accessToken, refreshToken }, existingUser },
+      
+      data: {proceed: true, token: { accessToken, refreshToken }, existingUser },
       message: "Login successful",
     });
   } catch (error) {

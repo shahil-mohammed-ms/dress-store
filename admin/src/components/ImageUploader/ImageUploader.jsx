@@ -1,16 +1,40 @@
 'use client'
 import { useState } from 'react';
 
-const ImageUploader = () => {
+const ImageUploader = ({ onUpload }) => {
+  // const [images, setImages] = useState([]);
+
+  // const handleImageChange = (event) => {
+  //   const files = Array.from(event.target.files);
+  //   setImages((prevImages) => [...prevImages, ...files]);
+  // };
+
+  // const removeImage = (index) => {
+  //   setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  // };
   const [images, setImages] = useState([]);
 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    setImages((prevImages) => {
+      const newImages = [...prevImages, ...files];
+      if (onUpload) {
+        // Pass image details to the parent component when images are selected
+        onUpload(newImages);
+      }
+      return newImages;
+    });
   };
 
   const removeImage = (index) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setImages((prevImages) => {
+      const newImages = prevImages.filter((_, i) => i !== index);
+      if (onUpload) {
+        // Pass updated image details to the parent component after removing an image
+        onUpload(newImages);
+      }
+      return newImages;
+    });
   };
 
   return (

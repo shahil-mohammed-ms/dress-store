@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 
-const Dropdown = () => {
+const Dropdown = ({type,handleSelectedCategory }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState('Options');
 
@@ -11,6 +11,8 @@ const Dropdown = () => {
 
   const handleItemClick = (item) => {
     setSelectedItem(item); // Set the selected item
+    handleSelectedCategory(type,item)
+    console.log(`${type}: ${item}`);
     setIsOpen(false); // Close the dropdown
   };
 

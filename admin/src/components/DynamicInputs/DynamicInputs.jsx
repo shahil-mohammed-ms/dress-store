@@ -1,16 +1,33 @@
 'use client'
 import { useState } from 'react';
 
-const DynamicInputs = () => {
+const DynamicInputs = ({dynamicInputDatas}) => {
   const [fields, setFields] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [chipValues, setChipValues] = useState({});
 
+// console.log('fields',fields)
+// console.log('inputval',inputValue)
+// console.log('chipval',chipValues)
+
+  // const handleAddField = (e) => {
+  //   e.preventDefault()
+  //   if (inputValue && !fields.includes(inputValue)) {
+  //     setFields((prevFields) => [...prevFields, inputValue]);
+  //     setChipValues((prevChipValues) => ({ ...prevChipValues, [inputValue]: [] }));
+  //     dynamicInputDatas(chipValues)
+  //     setInputValue('');
+  //   }
+  // };
   const handleAddField = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (inputValue && !fields.includes(inputValue)) {
       setFields((prevFields) => [...prevFields, inputValue]);
-      setChipValues((prevChipValues) => ({ ...prevChipValues, [inputValue]: [] }));
+      setChipValues((prevChipValues) => {
+        const updatedChipValues = { ...prevChipValues, [inputValue]: [] };
+        dynamicInputDatas(updatedChipValues); // Pass updated state
+        return updatedChipValues;
+      });
       setInputValue('');
     }
   };
@@ -19,12 +36,22 @@ const DynamicInputs = () => {
     setInputValue(event.target.value);
   };
 
-  const handleFieldInputChange = (fieldName, index, value) => {
+  // const handleFieldInputChange = (fieldName, index, value) => {
 
+  //   setChipValues((prevChipValues) => {
+  //     const updatedValues = [...prevChipValues[fieldName]];
+  //     updatedValues[index] = value;
+  //     return { ...prevChipValues, [fieldName]: updatedValues };
+  //   });
+  //   dynamicInputDatas(chipValues)
+  // };
+  const handleFieldInputChange = (fieldName, index, value) => {
     setChipValues((prevChipValues) => {
       const updatedValues = [...prevChipValues[fieldName]];
       updatedValues[index] = value;
-      return { ...prevChipValues, [fieldName]: updatedValues };
+      const updatedChipValues = { ...prevChipValues, [fieldName]: updatedValues };
+      dynamicInputDatas(updatedChipValues); // Pass updated state
+      return updatedChipValues;
     });
   };
 
@@ -37,10 +64,19 @@ const DynamicInputs = () => {
     }
   };
 
+  // const handleRemoveChip = (fieldName, index) => {
+  //   setChipValues((prevChipValues) => {
+  //     const updatedValues = prevChipValues[fieldName].filter((_, i) => i !== index);
+  //     return { ...prevChipValues, [fieldName]: updatedValues };
+  //   });
+  //   dynamicInputDatas(chipValues)
+  // };
   const handleRemoveChip = (fieldName, index) => {
     setChipValues((prevChipValues) => {
       const updatedValues = prevChipValues[fieldName].filter((_, i) => i !== index);
-      return { ...prevChipValues, [fieldName]: updatedValues };
+      const updatedChipValues = { ...prevChipValues, [fieldName]: updatedValues };
+      dynamicInputDatas(updatedChipValues); // Pass updated state
+      return updatedChipValues;
     });
   };
 
