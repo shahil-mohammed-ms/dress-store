@@ -2,11 +2,12 @@ const Address = require('../models/address')
 
 const getAddress = async (req, res) => {
   try {
-    const { _id } = req.decoded
-  // const _id =  '66796d0936bb97720a7764f4';
-
+    const { _id } = req?.decoded
+    console.log('id: ',_id)
     const data = await Address.find({ userId:_id })
-    res.status(200).json({ data })
+ 
+    console.log('datas: ',data)
+    res.status(200).json({ data,message:'successful' })
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: err?.message ?? 'Something went wrong' })
@@ -14,20 +15,19 @@ const getAddress = async (req, res) => {
 };
    
 const addAddress = async (req, res) => {
-  const {   firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile,type } = req?.body
+  const {   name,addressLine, city, state, pin } = req?.body
  // const userId = '66796d0936bb97720a7764f4';
  const { _id } = req?.decoded
 
  const isExisting = await Address.find({
   userId:_id
 });
-console.log(isExisting)
 let SetPrimaryTrue = false;
 if(isExisting.length <=0) SetPrimaryTrue=true
 
   try {
     const data = await Address.create({
-      userId:_id, firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary:SetPrimaryTrue,type
+      userId:_id, name,addressLine, city, state, pin , primary:SetPrimaryTrue
     })
     res.status(201).json({ data, message: 'Address created successfully' });
   } catch (error) {
@@ -51,8 +51,8 @@ const updateAddress = async (req, res) => {
 const deleteAddress = async (req, res) => {
   try {
     const id = req.params.id
-    await Address.deleteOne({ _id: id });
-    res.status(200).json({ message: 'Address deleted successfully' });
+   const data= await Address.deleteOne({ _id: id });
+    res.status(200).json({ message: 'Address deleted successfully',data });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: err?.message ?? 'Something went wrong' })
@@ -60,8 +60,10 @@ const deleteAddress = async (req, res) => {
 }
  const setPrimaryAddress = async (req, res) => {
   const {   addressId } = req.body;
+  console.log(req.body)
  // const userId = '66796d0936bb97720a7764f4';
  const { _id } = req?.decoded
+ console.log(_id)
   try {
       // Set all addresses' primary to false for the user
       await Address.updateMany(

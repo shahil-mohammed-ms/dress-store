@@ -5,25 +5,13 @@ const addressSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'User',
     },
-    firstname: {
+    name: {
         type: String,
         required: true
     },
-    lastname: {
-        type: String,
-        required: true
-    },
-    country: {
-        type: String,
-        required: true
-    },
-    address_line_1: {
-        type: String,
-        required: true
-    },
-    address_line_2: {
-        type: String,
-        required: true
+    addressLine:{
+        type:String,
+        required:true
     },
     type:{
         type:String
@@ -36,13 +24,9 @@ const addressSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    zip: {
+    pin: {
         type: String,
         required: true
-    },
-    mobile: {
-        type: Number,
-        required: true 
     },
     primary: {
         type: Boolean,
