@@ -23,7 +23,7 @@ const getCategoryById = async (req, res) => {
 
 const addCategory = async (req, res) => {
 console.log('reached category')
-
+console.log(req)
   const { name, desc } = req?.body
   const image = req?.file?.filename
   try {    

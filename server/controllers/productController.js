@@ -141,7 +141,8 @@ const getProductsAdmin = async (req, res) => {
       .collation({ locale: 'en' }) // Enable case-insensitive search
       .sort(sortOptions)
       .skip((pageNumber - 1) * limitNumber)
-      .limit(limitNumber);
+      .limit(limitNumber)
+      .populate('category')
     //const data = await Product.find()
     res.status(200).json({ data:products })
   } catch (error) {
@@ -240,19 +241,52 @@ const getProductById = async (req, res) => {
 }
 
 const addProduct = async (req, res) => {
-
- 
-  
   try {
     console.log(req.files);
-    const { name, subheading, category, brand, price, stock, discount, sale_rate, description,benefits } = req?.body
-
-    console.log('bene',benefits)
+    const {  name,
+  slugName,
+  description,
+  price,
+  costPrice,
+  discountPrice,
+  tax,
+  stockQuantity,
+  stockStatus,
+  reorderLevel,
+  weight,
+  shippingCharge,
+  dimensions,
+  category,
+  subCategory,
+  manufacturer,
+  tags,
+  dynamicInput,
+  variantInput, } = req?.body
+  console.log('cattt',category)
+console.log('reqq',req.body)
   
     if (req.files.length != 0) {
       const product = new Product({
-        name, subheading, category, brand, price, stock, discount, sale_rate, description,benefits:benefits ,
-        image: req.files.map((x) => x.filename)
+        name,
+        slugName,
+        description,
+        price,
+        costPrice,
+        discountPrice,
+        tax,
+        stockQuantity,
+        stockStatus,
+        reorderLevel,
+        weight,
+        shippingCharge,
+        dimensions,
+        category,
+        subCategory,
+        manufacturer,
+        tags,
+        dynamicInput,
+        variantInput,
+        images: req.files.map((x) => x.filename)
       });
       console.log(product);
       await product.save();

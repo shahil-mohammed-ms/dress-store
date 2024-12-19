@@ -1,66 +1,164 @@
-const mongoose = require('mongoose')
-const productSchema = new mongoose.Schema({
+// const mongoose = require('mongoose')
+// const productSchema = new mongoose.Schema({
 
+//     name: {
+//         type: String,
+//         required: true
+//     },
+//     subheading: {
+//         type: String,
+//         required: true
+//     },
+//     category: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         required: true,
+//         ref: "Category"
+//     },
+//     description: {
+//         type: String,
+//         required: true
+//     },
+//     brand: {
+//         type: String
+//     },
+//     tags: {
+//         type: String,
+//         enum: ["featured", "popular", "limited_time_deal", "most_loved"]
+//     },
+//     price: {
+//         type: Number,
+//         required: true
+//     },
+//     stock: {
+//         type: Number,
+//         required: true
+//     },
+//     discount: {
+//         type: Number,
+//         required: true
+//     },
+//     sale_rate: {
+//         type: Number,
+//         required: true
+//     },
+//     image: {
+//         type: Array,
+//         required:true
+//     },
+//     isAvailable: {
+//         type: Boolean,
+//         default: true
+//     },
+//     rating: {
+//         type: Number,
+//         default: 0
+//     },
+//     reviews: {
+//         type: Array
+//     },
+//     benefits:{
+//         type:[String]
+//     }
+// },
+// {
+//     timestamps: true
+// })
+// module.exports = mongoose.model('Product', productSchema)
+const mongoose = require('mongoose');
+
+const productSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
+      trim: true
     },
-    subheading: {
-        type: String,
-        required: true
-    },
-    category: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Category"
+    slugName: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
     },
     description: {
-        type: String,
-        required: true
-    },
-    brand: {
-        type: String
-    },
-    tags: {
-        type: String,
-        enum: ["featured", "popular", "limited_time_deal", "most_loved"]
+      type: String,
+      trim: true
     },
     price: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
+      min: 0
     },
-    stock: {
-        type: Number,
-        required: true
+    costPrice: {
+      type: Number,
+      min: 0
     },
-    discount: {
-        type: Number,
-        required: true
+    discountPrice: {
+      type: Number,
+      min: 0
     },
-    sale_rate: {
-        type: Number,
-        required: true
+    tax: {
+      type: Number,
+      min: 0
     },
-    image: {
-        type: Array,
-        required:true
+    stockQuantity: {
+      type: Number,
+      required: true,
+      min: 0
     },
-    isAvailable: {
-        type: Boolean,
-        default: true
+    stockStatus: {
+      type: String,
+      enum: ['In Stock', 'Out of Stock', 'Pre-Order'],
+      default: 'In Stock'
     },
-    rating: {
-        type: Number,
-        default: 0
+    reorderLevel: {
+      type: Number,
+      min: 0
     },
-    reviews: {
-        type: Array
+    weight: {
+      type: Number,
+      min: 0
     },
-    benefits:{
-        type:[String]
+    shippingCharge: {
+      type: Number,
+      min: 0
+    },
+    dimensions: {
+      type: String
+    },
+    category:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category', // Referencing the Category schema
+      trim: true,
+      required:true
+    },
+    subCategory: {
+      type: String,
+      trim: true
+    },
+    manufacturer: {
+      type: String,
+      trim: true
+    },
+    tags: {
+      type: [String],
+      default: []
+    },
+    images: {
+      type: [String],
+      default: []
+    },
+    dynamicInput: {
+      type: Object,
+      default: {}
+    },
+    variantInput: {
+      type: [Object],
+      default: []
     }
-},
-{
-    timestamps: true
-})
-module.exports = mongoose.model('Product', productSchema)
+  },
+  {
+    timestamps: true // Automatically adds createdAt and updatedAt fields
+  }
+);
+
+module.exports = mongoose.model('Product', productSchema);

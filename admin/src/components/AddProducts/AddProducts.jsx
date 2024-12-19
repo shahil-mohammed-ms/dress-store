@@ -1,18 +1,22 @@
 'use client'
-import { useState } from 'react';
+import { useState,useEffect, } from 'react';
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Dropdown from '../../components/dropDown/DropDown'
 import Tags from '../../components/Tags/Tags'
 import ImageUploader from '../../components/ImageUploader/ImageUploader'
 import DynamicInputs from '../../components/DynamicInputs/DynamicInputs'
 import Variants from '../../components/Variants/Variants'
- 
+import {addProducts} from '../../utils/api/productApi'
+import {getCategories} from '../../utils/api/categoryApi'
+import { useRouter } from 'next/navigation';
+
 
 
 function AddProducts() {
+  const router = useRouter();
 
-
-const [productDetails,setProductDetails]=useState({
+  const [categoriesData,setCategoriesData] = useState([])
+  const [productDetails,setProductDetails]=useState({
   name: '',
   slugName: '',
   description: '',
@@ -33,9 +37,21 @@ const [productDetails,setProductDetails]=useState({
   images: [],
   dynamicInput:{},
   variantInput:[],
-
-
 })
+
+  useEffect(()=>{
+    fetchCatData()
+  },[])
+
+const fetchCatData = async()=>{
+  try {
+    const response = await getCategories()
+    setCategoriesData(response?.data?.data)
+    console.log(response?.data?.data)
+  } catch (error) {
+    
+  }
+}
 
 const handelChange =(e)=>{
 
@@ -45,7 +61,8 @@ const handelChange =(e)=>{
 
   // Handle dropdown change
   const handleDropdownChange = (field, value) => {
-    setProductDetails({ ...productDetails, [field]: value });
+    console.log('categ',{[field]: value._id})
+    setProductDetails({ ...productDetails, [field]: value._id });
   };
 
   // Handle tag updates
@@ -71,9 +88,40 @@ setProductDetails({...productDetails,dynamicInput:DynData})
  
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
     console.log('Submitting Product Data:', productDetails);
+
+    const formData = new FormData();
+    Object.keys(productDetails).forEach((key) => {
+      if (key === 'images') {
+        // Add images array to FormData
+        productDetails.images.forEach((image) => formData.append('images', image));
+      } else if (key === 'tags' || key === 'variantInput') {
+        // Add array fields
+        formData.append(key, JSON.stringify(productDetails[key]));
+      } else if (key === 'dynamicInput') {
+        // Add object fields
+        formData.append(key, JSON.stringify(productDetails[key]));
+      } else {
+        // Add other fields
+        formData.append(key, productDetails[key]);
+      }
+    });
+
+
+    try {
+      const response = await addProducts(formData)
+      console.log(response)
+      if(response.status === 200){
+        console.log(response)
+        return router.push(`/products`)
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+
     // Call API or backend to save productData
   };
 
@@ -90,7 +138,7 @@ setProductDetails({...productDetails,dynamicInput:DynData})
               <h3 className="font-medium text-black dark:text-white">
                
               </h3>
-            </div>
+m            </div>
             <form onSubmit={handleSubmit}>
               <div className="p-6.5">
 
@@ -238,7 +286,7 @@ setProductDetails({...productDetails,dynamicInput:DynData})
                     name='stockStatus'
                                         value={productDetails.stockStatus}
                                         onChange={handelChange}
-                      type="number"
+                      type="text"
                       placeholder="Enter your last name"
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
@@ -317,11 +365,10 @@ setProductDetails({...productDetails,dynamicInput:DynData})
                   </label>
                   
                 </div>
-                <Dropdown type="category" handleSelectedCategory={handleDropdownChange} />
+                <Dropdown type="category" handleSelectedCategory={handleDropdownChange} catData={categoriesData} />
 
               </div>
-              <div className="p-6.5">
-                {/* Form content goes here */}
+              {/* <div className="p-6.5">
                 <div className="mb-4.5">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                  Sub Category
@@ -330,7 +377,7 @@ setProductDetails({...productDetails,dynamicInput:DynData})
                 </div>
                 <Dropdown type="subCategory" handleSelectedCategory={handleDropdownChange}  />
 
-              </div>
+              </div> */}
 
               <div className="p-6.5">
                 {/* Form content goes here */}
@@ -394,7 +441,7 @@ setProductDetails({...productDetails,dynamicInput:DynData})
                 </div>
                 {/* <div className="mb-4.5">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Return Policy
+                     Return Policy
                   </label>
                   <input
                     type="text"
@@ -435,4 +482,4 @@ setProductDetails({...productDetails,dynamicInput:DynData})
   )
 }
 
-export default AddProducts
+export default AddProducts       

@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 
-const Dropdown = ({type,handleSelectedCategory }) => {
+const Dropdown = ({type,handleSelectedCategory,catData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState('Options');
 
@@ -24,7 +24,7 @@ const Dropdown = ({type,handleSelectedCategory }) => {
           className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={toggleDropdown}
         >
-          {selectedItem}
+          {selectedItem.name}
           <svg
             className="-mr-1 ml-2 h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +44,7 @@ const Dropdown = ({type,handleSelectedCategory }) => {
       {isOpen && (
         <div className="origin-top-left absolute left-full mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            {items.map((item, index) => (
+            {catData.map((item, index) => (
               <a
                 key={index}
                 href="#"
@@ -55,7 +55,7 @@ const Dropdown = ({type,handleSelectedCategory }) => {
                   handleItemClick(item); // Handle item selection
                 }}
               >
-                {item}
+                {item.name}
               </a>
             ))}
           </div>

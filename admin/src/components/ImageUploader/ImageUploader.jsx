@@ -2,16 +2,7 @@
 import { useState } from 'react';
 
 const ImageUploader = ({ onUpload }) => {
-  // const [images, setImages] = useState([]);
 
-  // const handleImageChange = (event) => {
-  //   const files = Array.from(event.target.files);
-  //   setImages((prevImages) => [...prevImages, ...files]);
-  // };
-
-  // const removeImage = (index) => {
-  //   setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-  // };
   const [images, setImages] = useState([]);
 
   const handleImageChange = (event) => {
